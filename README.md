@@ -1,159 +1,159 @@
-# 🎭 Azure Insiders Demo — Thomas vs Sisyphe
+# Azure Insiders Demo — Thomas vs Sisyphus
 
-> **Session :** *Accélérez votre DevOps avec l'IA : du code au déploiement intelligent*  
-> **Présentateurs :** Solution Engineer Software & Dev Productivity + Firas Mdimagh, CSA AI & Apps
-
----
-
-## 🧱 Le Mythe de Thomas
-
-Thomas est ingénieur DevOps dans une startup tech. Chaque semaine, il pousse son rocher en haut de la montagne. Et chaque vendredi à 17h, le rocher redescend.
-
-Comme Sisyphe, Thomas est condamné à recommencer. **Mais aujourd'hui, ça change.**
-
-> *"Il faut imaginer Sisyphe heureux. Nous, on préfère lui donner GitHub Copilot — et lui rendre ses week-ends."*
+> **Session:** *Accelerate your DevOps with AI: from code to intelligent deployment*
+> **Presenters:** Solution Engineer Software & Dev Productivity + Firas Mdimagh, CSA AI & Apps
 
 ---
 
-## 🪨 Les 4 Rochers de Thomas
+## The Thomas Myth
 
-| # | Le Rocher | Douleur | Outil qui brise le rocher |
-|---|-----------|---------|--------------------------|
-| 1 | **Pipeline cassé le vendredi** | CI/CD écrit à la main, 18 min de build, cassé en prod | GitHub Copilot (VS Code) |
-| 2 | **Bug détecté en production** | Vulnérabilité SQL Injection découverte par un client | GitHub Copilot Coding Agent |
-| 3 | **Incident de nuit, runbook page 47** | 2h du matin, runbook de 2021, Jean-Claude est parti | Agentic Workflows (GitHub Actions) |
-| 4 | **Déploiement manuel : 18 min, les doigts croisés** | Anomalie post-deploy, Thomas est le pompier de service | Azure SRE Agent |
+Thomas is a DevOps engineer at a tech startup. Every week, he pushes his boulder up the mountain. And every Friday at 5pm, the boulder rolls back down.
 
----
+Like Sisyphus, Thomas is condemned to start over. **But today, that changes.**
 
-## 🎬 Les 4 Actes
-
-### Acte I — Le Mythe
-Présentation du personnage de Thomas et de la métaphore Sisyphe. Les 4 douleurs DevOps universelles. Le public reconnaît Thomas — c'est peut-être eux.
-
-### Acte II — Le Rocher
-Démonstration du problème : pipeline cassé, bug en prod, runbook illisible, déploiement risqué. Tout est réel, tout est douloureux.
-
-### Acte III — Le Copilote
-GitHub Copilot entre en scène. Chaque rocher est brisé, un par un, en temps réel devant le public.
-
-### Acte IV — La Malédiction Brisée
-Thomas n'est plus le pompier. Il est devenu **l'Architecte de la Fiabilité**. Mesures avant/après. Conclusion émotionnelle.
+> *"One must imagine Sisyphus happy. We prefer to give him GitHub Copilot — and give him back his weekends."*
 
 ---
 
-## 🎙️ Répartition des présentateurs
+## Thomas's 4 Boulders
 
-| Segment | Qui | Outil |
+| # | The Boulder | The Pain | Tool That Breaks It |
+|---|------------|----------|---------------------|
+| 1 | **Pipeline broken on Friday** | Hand-written CI/CD, 18-min build, broken in prod | GitHub Copilot (VS Code) |
+| 2 | **Bug detected in production** | SQL Injection vulnerability discovered by a client | GitHub Copilot Coding Agent |
+| 3 | **Night incident, runbook page 47** | 2am, 2021 runbook, Jean-Claude left the team | Agentic Workflows (GitHub Actions) |
+| 4 | **Manual deployment: 18 min, fingers crossed** | Post-deploy anomaly, Thomas is the on-call firefighter | Azure SRE Agent |
+
+---
+
+## The 4 Acts
+
+### Act I — The Myth
+Introduction of Thomas and the Sisyphus metaphor. The 4 universal DevOps pains. The audience recognizes Thomas — it might be them.
+
+### Act II — The Boulder
+Demonstration of the problem: broken pipeline, prod bug, unreadable runbook, risky deployment. Everything is real, everything is painful.
+
+### Act III — The Copilot
+GitHub Copilot enters the scene. Each boulder is broken, one by one, in real time in front of the audience.
+
+### Act IV — The Curse Broken
+Thomas is no longer the firefighter. He has become the **Reliability Architect**. Before/after metrics. Emotional conclusion.
+
+---
+
+## Presenter Split
+
+| Segment | Who | Tool |
 |---------|-----|-------|
-| Intro — Le Mythe de Thomas | SE | Slides |
-| Rocher 1 — Fix du pipeline | SE | Copilot in VS Code |
-| Rocher 2 — Bug → PR automatique | SE | Coding Agent |
-| Rocher 3 — Workflow incident | SE → Firas (transition) | Agentic Workflows |
-| Rocher 4 — Azure SRE Agent | Firas | Azure SRE Agent |
-| Conclusion — La malédiction brisée | Les deux | Slide finale |
+| Intro — The Thomas Myth | SE | Slides |
+| Boulder 1 — Pipeline fix | SE | Copilot in VS Code |
+| Boulder 2 — Bug to auto PR | SE | Coding Agent |
+| Boulder 3 — Incident workflow | SE to Firas (handoff) | Agentic Workflows |
+| Boulder 4 — Azure SRE Agent | Firas | Azure SRE Agent |
+| Conclusion — The curse broken | Both | Final slide |
 
 ---
 
-## 🚀 Demo Flow — Instructions pas à pas
+## Demo Flow — Step-by-Step Instructions
 
-### Pré-requis avant la session
-1. Fork ou clone ce repo dans un compte GitHub visible
-2. Créer les 3 issues depuis `ISSUES_SEED.md`
-3. Assigner l'Issue #1 (SQL Injection) à Copilot Coding Agent **10 min avant** la démo (il sera en train de travailler)
-4. Pré-exécuter le workflow `incident-response.yml` et garder les logs ouverts dans un onglet
-5. Ouvrir VS Code avec `app/app.py` et `.github/workflows/deploy.yml` prêts
-
----
-
-### 🪨 Rocher 1 — Pipeline cassé (GitHub Copilot, ~5 min)
-
-**Contexte à dire :** *"Thomas a écrit ce pipeline un vendredi soir. Vous voyez le commentaire en haut."*
-
-1. Ouvrir `.github/workflows/deploy.yml` dans VS Code
-2. Montrer les problèmes : runner `ubuntu-18.04`, jobs séquentiels, `python 3.8`, pas de cache
-3. Ouvrir **Copilot Chat** : *"Explique pourquoi ce pipeline est sous-optimal et propose une version optimisée"*
-4. Copilot explique en langage naturel
-5. Montrer `deploy-fixed.yml` comme résultat : jobs parallèles, `ubuntu-latest`, cache pip, bandit scan
-6. **Stat à annoncer : 18 min → 6 min, -67% de build**
-
-**Punchline :** *"Thomas ne cherche plus la page 47 du runbook. Il demande en français, Copilot lui répond."*
+### Prerequisites before the session
+1. Fork or clone this repo to a visible GitHub account
+2. Create the 3 issues from `ISSUES_SEED.md`
+3. Assign Issue #1 (SQL Injection) to Copilot Coding Agent **10 min before** the demo (it will be working in the background)
+4. Pre-run the `incident-response.yml` workflow and keep the logs open in a tab
+5. Open VS Code with `app/app.py` and `.github/workflows/deploy.yml` ready
 
 ---
 
-### 🪨 Rocher 2 — Bug en prod (Coding Agent, ~7 min)
+### Boulder 1 — Broken Pipeline (GitHub Copilot, ~5 min)
 
-**Contexte à dire :** *"Un client a envoyé ce payload à 3h du matin. L'équipe a découvert la vulnérabilité en production."*
+**Context to say:** *"Thomas wrote this pipeline on a Friday evening. Notice the comment at the top."*
 
-1. Ouvrir l'Issue #1 `[SECURITY] SQL Injection` dans le navigateur
-2. Montrer le payload d'exemple dans l'issue
-3. Cliquer **"Assign to Copilot"** sur l'issue (ou montrer que c'est déjà assigné)
-4. **Parler au public pendant 2-3 min** (Coding Agent travaille en arrière-plan)
-5. Rafraîchir → Copilot a ouvert une **Pull Request** avec :
-   - Le fix (requête paramétrée)
-   - Les tests manquants pour `/login`
-   - Une description PR expliquant la remédiation
-6. Montrer le diff — souligner que Copilot a ajouté les tests
+1. Open `.github/workflows/deploy.yml` in VS Code
+2. Show the problems: `ubuntu-18.04` runner, sequential jobs, `python 3.8`, no cache
+3. Open **Copilot Chat**: *"Explain why this pipeline is suboptimal and suggest an optimized version"*
+4. Copilot explains in plain language
+5. Show `deploy-fixed.yml` as the result: parallel jobs, `ubuntu-latest`, pip cache, bandit scan
+6. **Stat to announce: 18 min to 6 min, -67% build time**
 
-**Punchline :** *"Avant, Thomas apprenait le bug par un client furieux. Maintenant, Copilot le résout pendant que Thomas boit son café."*
+**Punchline:** *"Thomas no longer searches through page 47 of the runbook. He just asks Copilot."*
 
 ---
 
-### 🪨 Rocher 3 — Incident de nuit (Agentic Workflow, ~6 min)
+### Boulder 2 — Prod Bug (Coding Agent, ~7 min)
 
-**Contexte à dire :** *"2h du matin. Une alerte. Thomas ouvre le runbook. Page 1... page 23... page 47."*
+**Context to say:** *"A client sent this payload at 3am. The team discovered the vulnerability in production."*
 
-1. Ouvrir `runbooks/incident-runbook.md` — montrer rapidement la longueur et le step 47
-2. **Transition :** *"Et si le workflow faisait ça automatiquement ?"*
-3. Déclencher `incident-response.yml` via workflow_dispatch (ou montrer un run complété)
-4. Parcourir les steps : Detect → Correlate → Diagnose → Remediate → Report
-5. Montrer l'issue créée automatiquement avec le rapport d'incident structuré
+1. Open Issue #1 `[SECURITY] SQL Injection` in the browser
+2. Show the example payload in the issue
+3. Click **"Assign to Copilot"** on the issue (or show it is already assigned)
+4. **Talk to the audience for 2-3 min** (Coding Agent works in the background)
+5. Refresh to see Copilot has opened a **Pull Request** with:
+   - The fix (parameterized query)
+   - Missing tests for `/login`
+   - A PR description explaining the remediation
+6. Show the diff — highlight that Copilot added the tests
 
-**Punchline :** *"2h du matin, Thomas dort. Le workflow est déjà en train de rédiger le post-mortem."*
-
----
-
-### 🪨 Rocher 4 — Azure SRE Agent (Firas, ~7 min)
-
-*Handoff à Firas — voir script séparé Azure SRE Agent*
-
-**Contexte à dire :** *"La PR est mergée, le déploiement tourne. Et là... une anomalie apparaît dans Azure Monitor."*
+**Punchline:** *"Before, Thomas learned about the bug from an angry client. Now, Copilot fixes it while Thomas drinks his coffee."*
 
 ---
 
-## 📁 Structure du projet
+### Boulder 3 — Night Incident (Agentic Workflow, ~6 min)
+
+**Context to say:** *"2am. An alert fires. Thomas opens the runbook. Page 1... page 23... page 47."*
+
+1. Open `runbooks/incident-runbook.md` — quickly show the length and step 47
+2. **Transition:** *"What if the workflow did this automatically?"*
+3. Trigger `incident-response.yml` via workflow_dispatch (or show a completed run)
+4. Walk through the steps: Detect, Correlate, Diagnose, Remediate, Report
+5. Show the automatically created GitHub Issue with the structured incident report
+
+**Punchline:** *"2am, Thomas is asleep. The workflow is already writing the post-mortem."*
+
+---
+
+### Boulder 4 — Azure SRE Agent (Firas, ~7 min)
+
+*Handoff to Firas — see separate Azure SRE Agent script*
+
+**Context to say:** *"The PR is merged, deployment is running. And then... an anomaly appears in Azure Monitor."*
+
+---
+
+## Project Structure
 
 ```
 azure-insiders-demo/
-├── README.md                           # Ce fichier
+├── README.md                           # This file
 ├── app/
-│   ├── app.py                          # Flask app (avec vulnérabilité intentionnelle)
+│   ├── app.py                          # Flask app (with intentional vulnerability)
 │   ├── requirements.txt
 │   └── tests/
-│       └── test_app.py                 # Tests incomplets (pour Coding Agent)
+│       └── test_app.py                 # Incomplete tests (for Coding Agent)
 ├── .github/
 │   └── workflows/
-│       ├── deploy.yml                  # ⚠️ Pipeline cassé (Rocher 1)
-│       ├── deploy-fixed.yml            # ✅ Pipeline optimisé (post-Copilot)
-│       └── incident-response.yml       # 🤖 Workflow agentic (Rocher 3)
+│       ├── deploy.yml                  # BROKEN pipeline (Boulder 1)
+│       ├── deploy-fixed.yml            # Fixed pipeline (post-Copilot)
+│       └── incident-response.yml       # Agentic workflow (Boulder 3)
 ├── infra/
-│   └── main.bicep                      # Infrastructure Azure (App Service + SQL)
+│   └── main.bicep                      # Azure infrastructure (App Service + SQL)
 ├── runbooks/
-│   └── incident-runbook.md             # 😱 Runbook de 2021 (Rocher 3 — page 47)
-└── ISSUES_SEED.md                      # Issues à créer avant la démo
+│   └── incident-runbook.md             # Outdated 2021 runbook (Boulder 3 — page 47)
+└── ISSUES_SEED.md                      # Issues to create before the demo
 ```
 
 ---
 
-## 📊 Métriques avant/après (pour les slides)
+## Before / After Metrics (for slides)
 
-| Métrique | Avant (Thomas seul) | Après (Thomas + GitHub AI) |
-|----------|--------------------|-----------------------------|
-| Temps de build CI | 18 min | 6 min (-67%) |
-| Temps de fix vulnérabilité | 2h | < 10 min |
-| Temps de réponse incident | 2h (nuit) | Automatique |
-| Déploiement manuel | 45 min | Supervisé + rollback auto |
+| Metric | Before (Thomas alone) | After (Thomas + GitHub AI) |
+|--------|----------------------|---------------------------|
+| CI build time | 18 min | 6 min (-67%) |
+| Vulnerability fix time | 2 hours | < 10 min |
+| Incident response time | 2 hours (night) | Automated |
+| Manual deployment | 45 min | Supervised + auto-rollback |
 
 ---
 
-*Projet créé pour Azure Insiders — Avril 2026*
+*Project created for Azure Insiders — April 2026*

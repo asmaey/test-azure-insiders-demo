@@ -1,15 +1,15 @@
-# 🤖 Agentic Incident Response Workflow — Rocher 3
-# Ce workflow simule une réponse automatique aux incidents de production
-# Thomas n'a plus besoin de chercher la page 47 du runbook à 2h du matin
+# Agentic Incident Response Workflow — Boulder 3
+# This workflow simulates automated incident response
+# Thomas no longer needs to search for page 47 of the runbook at 2am
 
-name: 🚨 Incident Response — Agentic Workflow
+name: Incident Response — Agentic Workflow
 
 on:
-  # Déclenchement manuel pour la démo (workflow_dispatch)
+  # Manual trigger for the demo (workflow_dispatch)
   workflow_dispatch:
     inputs:
       alert_type:
-        description: "Type d'alerte détectée"
+        description: "Type of detected alert"
         required: true
         type: choice
         options:
@@ -18,11 +18,11 @@ on:
           - memory_leak
         default: latency_spike
       service_name:
-        description: "Service affecté"
+        description: "Affected service"
         required: true
         default: "api-production"
       severity:
-        description: "Sévérité"
+        description: "Severity"
         required: true
         type: choice
         options:
@@ -31,13 +31,13 @@ on:
           - P3-Medium
         default: P2-High
 
-  # Peut aussi être déclenché par un webhook de monitoring (Azure Monitor, Datadog, etc.)
+  # Can also be triggered by a monitoring webhook (Azure Monitor, Datadog, etc.)
   repository_dispatch:
     types: [monitoring-alert]
 
 jobs:
   incident-response:
-    name: 🚨 Automated Incident Response
+    name: Automated Incident Response
     runs-on: ubuntu-latest
 
     permissions:
@@ -47,19 +47,19 @@ jobs:
     steps:
       # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
       # STEP 1 — DETECT
-      # Capture et affiche les détails de l'alerte
+      # Capture and display the alert details
       # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-      - name: 🔍 Detect — Capture alert details
+      - name: Detect — Capture alert details
         id: detect
         run: |
           echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-          echo "🚨 INCIDENT DÉTECTÉ"
+          echo "INCIDENT DETECTED"
           echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-          echo "Type d'alerte : ${{ github.event.inputs.alert_type }}"
-          echo "Service       : ${{ github.event.inputs.service_name }}"
-          echo "Sévérité      : ${{ github.event.inputs.severity }}"
-          echo "Timestamp     : $(date -u '+%Y-%m-%d %H:%M:%S UTC')"
-          echo "Déclenché par : ${{ github.actor }}"
+          echo "Alert type  : ${{ github.event.inputs.alert_type }}"
+          echo "Service     : ${{ github.event.inputs.service_name }}"
+          echo "Severity    : ${{ github.event.inputs.severity }}"
+          echo "Timestamp   : $(date -u '+%Y-%m-%d %H:%M:%S UTC')"
+          echo "Triggered by: ${{ github.actor }}"
           echo ""
           echo "alert_type=${{ github.event.inputs.alert_type }}" >> $GITHUB_OUTPUT
           echo "service_name=${{ github.event.inputs.service_name }}" >> $GITHUB_OUTPUT
@@ -67,23 +67,23 @@ jobs:
 
       # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
       # STEP 2 — CORRELATE
-      # Récupère le contexte git récent pour identifier la cause probable
-      # Ce que Thomas faisait manuellement en 30 min : "qu'est-ce qui a changé ?"
+      # Fetch recent git context to identify the probable cause
+      # What Thomas used to do manually in 30 min: "what changed?"
       # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-      - name: 🔗 Correlate — Fetch recent changes
+      - name: Correlate — Fetch recent changes
         id: correlate
         uses: actions/checkout@v4
         with:
           fetch-depth: 10
 
-      - name: 🔗 Correlate — Analyze recent commits
+      - name: Correlate — Analyze recent commits
         id: commits
         run: |
           echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-          echo "🔗 CORRÉLATION — Changements récents"
+          echo "CORRELATION — Recent changes"
           echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
           echo ""
-          echo "📋 Derniers 3 commits :"
+          echo "Last 3 commits:"
           git log --oneline -3 --format="  %h - %s (%an, %ar)"
 
           LAST_COMMIT=$(git log -1 --format="%H")
@@ -92,11 +92,11 @@ jobs:
           LAST_COMMIT_TIME=$(git log -1 --format="%ar")
 
           echo ""
-          echo "⚠️  Dernier déploiement probable :"
+          echo "Most recent probable deployment:"
           echo "  SHA    : $LAST_COMMIT"
           echo "  Message: $LAST_COMMIT_MSG"
-          echo "  Auteur : $LAST_COMMIT_AUTHOR"
-          echo "  Quand  : $LAST_COMMIT_TIME"
+          echo "  Author : $LAST_COMMIT_AUTHOR"
+          echo "  When   : $LAST_COMMIT_TIME"
 
           echo "last_commit=$LAST_COMMIT" >> $GITHUB_OUTPUT
           echo "last_commit_msg=$LAST_COMMIT_MSG" >> $GITHUB_OUTPUT
@@ -104,14 +104,14 @@ jobs:
 
       # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
       # STEP 3 — DIAGNOSE
-      # Génère un diagnostic structuré basé sur le type d'alerte
-      # Remplace la page 47 du runbook
+      # Generate a structured diagnosis based on the alert type
+      # Replaces the 47-page runbook
       # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-      - name: 🩺 Diagnose — Generate incident diagnosis
+      - name: Diagnose — Generate incident diagnosis
         id: diagnose
         run: |
           echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-          echo "🩺 DIAGNOSTIC AUTOMATIQUE"
+          echo "AUTOMATED DIAGNOSIS"
           echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
           ALERT_TYPE="${{ github.event.inputs.alert_type }}"
@@ -119,25 +119,25 @@ jobs:
 
           case "$ALERT_TYPE" in
             latency_spike)
-              DIAGNOSIS="Spike de latence détecté sur $SERVICE. Analyse : p99 passé de ~200ms à >4000ms dans les 15 dernières minutes. Corrélation probable avec le dernier déploiement. Causes possibles : (1) requête SQL non optimisée, (2) cold start après redémarrage, (3) dépendance externe lente."
+              DIAGNOSIS="Latency spike detected on $SERVICE. Analysis: p99 jumped from ~200ms to >4000ms in the last 15 minutes. Probable correlation with the last deployment. Possible causes: (1) unoptimized SQL query, (2) cold start after restart, (3) slow external dependency."
               CONFIDENCE="87%"
-              ROOT_CAUSE="Probable régression de performance introduite dans le dernier commit"
+              ROOT_CAUSE="Probable performance regression introduced in the latest commit"
               ;;
             error_rate)
-              DIAGNOSIS="Taux d'erreur élevé sur $SERVICE. Analyse : taux d'erreur 5xx passé de 0.1% à 12% en 5 minutes. Corrélation avec deployment SHA récent. Causes possibles : (1) exception non gérée dans le nouveau code, (2) variable d'environnement manquante, (3) incompatibilité de schema de base de données."
+              DIAGNOSIS="High error rate on $SERVICE. Analysis: 5xx error rate jumped from 0.1% to 12% in 5 minutes. Correlation with recent deployment SHA. Possible causes: (1) unhandled exception in new code, (2) missing environment variable, (3) database schema incompatibility."
               CONFIDENCE="92%"
-              ROOT_CAUSE="Exception non interceptée probablement liée au changement de code récent"
+              ROOT_CAUSE="Unhandled exception likely related to the recent code change"
               ;;
             memory_leak)
-              DIAGNOSIS="Memory leak détecté sur $SERVICE. Analyse : consommation mémoire augmente de ~50MB/min, aucun plateau visible. Pattern cohérent avec une fuite de connexion DB ou des objets non libérés. Redémarrage du service recommandé en urgence."
+              DIAGNOSIS="Memory leak detected on $SERVICE. Analysis: memory usage increasing at ~50MB/min with no plateau. Pattern consistent with a DB connection leak or unreleased objects. Service restart urgently recommended."
               CONFIDENCE="78%"
-              ROOT_CAUSE="Fuite mémoire possible — connexions DB non fermées ou listeners non désenregistrés"
+              ROOT_CAUSE="Possible memory leak — unclosed DB connections or unregistered listeners"
               ;;
           esac
 
-          echo "Diagnostic  : $DIAGNOSIS"
-          echo "Confiance   : $CONFIDENCE"
-          echo "Cause racine: $ROOT_CAUSE"
+          echo "Diagnosis   : $DIAGNOSIS"
+          echo "Confidence  : $CONFIDENCE"
+          echo "Root cause  : $ROOT_CAUSE"
 
           echo "diagnosis=$DIAGNOSIS" >> $GITHUB_OUTPUT
           echo "confidence=$CONFIDENCE" >> $GITHUB_OUTPUT
@@ -145,39 +145,39 @@ jobs:
 
       # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
       # STEP 4 — REMEDIATE
-      # Détermine et affiche l'action recommandée
-      # Thomas n'a plus besoin de décider seul à 2h du matin
+      # Determine and display the recommended action
+      # Thomas no longer has to decide alone at 2am
       # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-      - name: 🔧 Remediate — Determine recommended action
+      - name: Remediate — Determine recommended action
         id: remediate
         run: |
           echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-          echo "🔧 ACTION RECOMMANDÉE"
+          echo "RECOMMENDED ACTION"
           echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
           ALERT_TYPE="${{ github.event.inputs.alert_type }}"
 
           case "$ALERT_TYPE" in
             latency_spike)
-              ACTION="ROLLBACK — Revenir au commit précédent. Commande : git revert ${{ steps.commits.outputs.last_commit }} && git push origin main"
+              ACTION="ROLLBACK — Revert to the previous commit. Command: git revert ${{ steps.commits.outputs.last_commit }} && git push origin main"
               ACTION_TYPE="rollback"
-              URGENCY="Immédiate (< 5 min)"
+              URGENCY="Immediate (< 5 min)"
               ;;
             error_rate)
-              ACTION="ROLLBACK — Déployer la version précédente via Azure App Service deployment slots. Commande Azure CLI : az webapp deployment slot swap --name ${{ github.event.inputs.service_name }}"
+              ACTION="ROLLBACK — Deploy the previous version via Azure App Service deployment slots. Azure CLI: az webapp deployment slot swap --name ${{ github.event.inputs.service_name }}"
               ACTION_TYPE="rollback"
-              URGENCY="Immédiate (< 10 min)"
+              URGENCY="Immediate (< 10 min)"
               ;;
             memory_leak)
-              ACTION="RESTART + SCALE-OUT — Redémarrer le service et augmenter le nombre d'instances pendant l'investigation. Commande : az webapp restart + az appservice plan update --number-of-workers 3"
+              ACTION="RESTART + SCALE-OUT — Restart the service and increase instance count during investigation. Commands: az webapp restart + az appservice plan update --number-of-workers 3"
               ACTION_TYPE="restart-scale"
-              URGENCY="Urgente (< 15 min)"
+              URGENCY="Urgent (< 15 min)"
               ;;
           esac
 
           echo "Action      : $ACTION"
           echo "Type        : $ACTION_TYPE"
-          echo "Urgence     : $URGENCY"
+          echo "Urgency     : $URGENCY"
 
           echo "action=$ACTION" >> $GITHUB_OUTPUT
           echo "action_type=$ACTION_TYPE" >> $GITHUB_OUTPUT
@@ -185,16 +185,16 @@ jobs:
 
       # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
       # STEP 5 — REPORT
-      # Crée automatiquement une GitHub Issue avec le rapport d'incident complet
-      # Ce que Thomas rédigeait manuellement en 45 min après l'incident
+      # Automatically create a GitHub Issue with the full incident report
+      # What Thomas used to write manually in 45 min after the incident
       # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-      - name: 📋 Report — Create incident GitHub Issue
+      - name: Report — Create incident GitHub Issue
         id: report
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-          echo "📋 CRÉATION DU RAPPORT D'INCIDENT"
+          echo "CREATING INCIDENT REPORT"
           echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
           TIMESTAMP=$(date -u '+%Y-%m-%d %H:%M:%S UTC')
@@ -202,76 +202,76 @@ jobs:
           SERVICE="${{ github.event.inputs.service_name }}"
           SEVERITY="${{ github.event.inputs.severity }}"
 
-          # Formattage du rapport d'incident
+          # Format the incident report
           ISSUE_BODY=$(cat <<EOF
-          ## 🚨 Rapport d'Incident — ${ALERT_TYPE} sur ${SERVICE}
+          ## Incident Report — ${ALERT_TYPE} on ${SERVICE}
 
-          > **Généré automatiquement par le workflow Agentic Incident Response**
-          > *Ce rapport aurait pris 2h à Thomas de rédiger manuellement à 2h du matin*
+          > **Automatically generated by the Agentic Incident Response workflow**
+          > *This report would have taken Thomas 2 hours to write manually at 2am*
 
           ---
 
-          ### 📊 Résumé
+          ### Summary
 
-          | Champ | Valeur |
-          |-------|--------|
-          | **Type d'alerte** | \`${ALERT_TYPE}\` |
-          | **Service affecté** | \`${SERVICE}\` |
-          | **Sévérité** | \`${SEVERITY}\` |
-          | **Timestamp détection** | ${TIMESTAMP} |
+          | Field | Value |
+          |-------|-------|
+          | **Alert type** | \`${ALERT_TYPE}\` |
+          | **Affected service** | \`${SERVICE}\` |
+          | **Severity** | \`${SEVERITY}\` |
+          | **Detection timestamp** | ${TIMESTAMP} |
           | **Run ID** | ${{ github.run_id }} |
-          | **Déclenché par** | @${{ github.actor }} |
+          | **Triggered by** | @${{ github.actor }} |
 
           ---
 
-          ### 🔗 Corrélation — Dernier déploiement
+          ### Correlation — Last Deployment
 
-          - **SHA** : \`${{ steps.commits.outputs.last_commit }}\`
-          - **Message** : ${{ steps.commits.outputs.last_commit_msg }}
-          - **Auteur** : ${{ steps.commits.outputs.last_commit_author }}
+          - **SHA**: \`${{ steps.commits.outputs.last_commit }}\`
+          - **Message**: ${{ steps.commits.outputs.last_commit_msg }}
+          - **Author**: ${{ steps.commits.outputs.last_commit_author }}
 
           ---
 
-          ### 🩺 Diagnostic
+          ### Diagnosis
 
           ${{ steps.diagnose.outputs.diagnosis }}
 
-          **Cause racine probable :** ${{ steps.diagnose.outputs.root_cause }}
+          **Probable root cause:** ${{ steps.diagnose.outputs.root_cause }}
 
-          **Niveau de confiance :** ${{ steps.diagnose.outputs.confidence }}
+          **Confidence level:** ${{ steps.diagnose.outputs.confidence }}
 
           ---
 
-          ### 🔧 Action recommandée
+          ### Recommended Action
 
-          **Type :** \`${{ steps.remediate.outputs.action_type }}\`
+          **Type:** \`${{ steps.remediate.outputs.action_type }}\`
 
           ${{ steps.remediate.outputs.action }}
 
-          **Urgence :** ${{ steps.remediate.outputs.urgency }}
+          **Urgency:** ${{ steps.remediate.outputs.urgency }}
 
           ---
 
-          ### ✅ Checklist de résolution
+          ### Resolution Checklist
 
-          - [ ] Action recommandée exécutée
-          - [ ] Service revenu à la normale (métriques OK)
-          - [ ] Cause racine confirmée
-          - [ ] Post-mortem planifié
-          - [ ] Runbook mis à jour
+          - [ ] Recommended action executed
+          - [ ] Service returned to normal (metrics OK)
+          - [ ] Root cause confirmed
+          - [ ] Post-mortem scheduled
+          - [ ] Runbook updated
 
           ---
 
-          *Rapport généré par le workflow [incident-response.yml](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) — Agentic Incident Response*
+          *Report generated by [incident-response.yml](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) — Agentic Incident Response*
           EOF
           )
 
-          echo "Création de l'issue GitHub..."
+          echo "Creating GitHub issue..."
           gh issue create \
-            --title "🚨 [INCIDENT] ${ALERT_TYPE} sur ${SERVICE} — ${TIMESTAMP}" \
+            --title "[INCIDENT] ${ALERT_TYPE} on ${SERVICE} — ${TIMESTAMP}" \
             --body "$ISSUE_BODY" \
             --label "incident,production" \
-            --repo ${{ github.repository }} || echo "Note: Labels 'incident' et 'production' à créer si absent"
+            --repo ${{ github.repository }} || echo "Note: Labels 'incident' and 'production' need to be created if missing"
 
-          echo "✅ Rapport d'incident créé automatiquement"
-          echo "Thomas peut continuer à dormir. 😴"
+          echo "Incident report created automatically."
+          echo "Thomas can keep sleeping. 😴"

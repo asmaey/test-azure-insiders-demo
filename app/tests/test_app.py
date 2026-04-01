@@ -16,7 +16,7 @@ def client():
         yield client
 
 
-# ✅ Test basique — fonctionne correctement
+# Basic test for the health endpoint — passes correctly
 def test_health(client):
     response = client.get("/health")
     assert response.status_code == 200
@@ -24,18 +24,18 @@ def test_health(client):
     assert data["status"] == "ok"
 
 
-# ⚠️ BROKEN: Cette assertion est intentionnellement fausse pour faire échouer la CI
-# Le bon status code est 401, mais on teste 200 — Boulder 1: la CI est rouge le vendredi
+# ⚠️ BROKEN: This assertion is intentionally wrong to make CI fail
+# The correct status code is 200, but we assert 999 — Boulder 1: CI is red on Friday
 def test_health_wrong_assertion(client):
     response = client.get("/health")
-    assert response.status_code == 999  # ⚠️ BROKEN: intentionnellement faux pour casser la CI
+    assert response.status_code == 999  # ⚠️ BROKEN: intentionally wrong to break CI
 
 
 # TODO: add auth tests — Copilot will suggest these
-# Les tests pour /login sont manquants — le Coding Agent va les générer automatiquement
-# Exemples de cas à tester :
-#   - Login valide avec bons identifiants
-#   - Login invalide avec mauvais mot de passe
-#   - 🚨 SQL Injection : username = "admin' --"
-#   - Requête sans body JSON
-#   - Champs manquants (username ou password absent)
+# Tests for /login are missing — the Coding Agent will generate them automatically
+# Example cases to test:
+#   - Valid login with correct credentials
+#   - Invalid login with wrong password
+#   - 🚨 SQL Injection: username = "admin' --"
+#   - Request with no JSON body
+#   - Missing fields (username or password absent)

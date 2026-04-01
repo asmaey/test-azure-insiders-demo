@@ -1,8 +1,8 @@
 # ⚠️ TODO: This pipeline was written on a Friday. Good luck.
 # Estimated time: 18 minutes
-# Dernière modification: vendredi 17h52 par Thomas — "ça devrait marcher"
+# Last modified: Friday at 5:52pm by Thomas — "should work"
 
-name: Deploy — Thomas's Pipeline 🤞
+name: Deploy — Thomas's Pipeline
 
 on:
   push:
@@ -11,21 +11,21 @@ on:
     branches: [main]
 
 jobs:
-  # ⚠️ BROKEN: Tout dans un seul job — pas de parallélisme, pas de séparation des responsabilités
-  # lint, test, build, deploy tournent séquentiellement comme en 2015
+  # ⚠️ BROKEN: Everything in a single job — no parallelism, no separation of concerns
+  # lint, test, build, deploy all run sequentially like it's 2015
   build-and-deploy:
-    runs-on: ubuntu-18.04  # ⚠️ BROKEN: Runner déprécié depuis 2023 — va bientôt cesser de fonctionner
+    runs-on: ubuntu-18.04  # ⚠️ BROKEN: Deprecated runner since 2023 — will stop working soon
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2  # ⚠️ BROKEN: Version obsolète de l'action
+        uses: actions/checkout@v2  # ⚠️ BROKEN: Outdated action version
 
       - name: Setup Python
-        uses: actions/setup-python@v2  # ⚠️ BROKEN: Version obsolète
+        uses: actions/setup-python@v2  # ⚠️ BROKEN: Outdated version
         with:
-          python-version: 3.8  # ⚠️ BROKEN: Python 3.8 — EOL en octobre 2024, pas de support sécurité
+          python-version: 3.8  # ⚠️ BROKEN: Python 3.8 — EOL October 2024, no security support
 
-      # 🐌 SLOW: Pas de cache pip — télécharge tout à chaque run (ajoute ~4 min)
+      # 🐌 SLOW: No pip cache — re-downloads everything on each run (adds ~4 min)
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
@@ -34,34 +34,34 @@ jobs:
       - name: Lint
         run: |
           pip install flake8
-          flake8 azure-insiders-demo/app/ --max-line-length=120 || true  # ⚠️ BROKEN: erreurs ignorées avec || true
+          flake8 azure-insiders-demo/app/ --max-line-length=120 || true  # ⚠️ BROKEN: errors silently ignored with || true
 
       - name: Run tests
-        # ⚠️ BROKEN: Va échouer à cause du test cassé dans test_app.py (assert 999)
+        # ⚠️ BROKEN: Will fail because of the broken test in test_app.py (assert 999)
         run: |
           cd azure-insiders-demo
           pytest app/tests/ -v
 
       - name: Build Docker image
-        # 🐌 SLOW: Build sans cache Docker — recommence from scratch à chaque fois
+        # 🐌 SLOW: Docker build with no cache — restarts from scratch every time
         run: |
           echo "Building Docker image..."
-          echo "No Dockerfile found — Thomas avait prévu de l'ajouter 'plus tard'"
-          sleep 3  # 🐌 Simulation du build lent
+          echo "No Dockerfile found — Thomas was going to add it 'later'"
+          sleep 3  # 🐌 Simulating slow build
 
       - name: Security scan
-        # ⚠️ BROKEN: Pas de vrai scan de sécurité — Thomas "faisait confiance au code"
+        # ⚠️ BROKEN: No real security scan — Thomas "trusted the code"
         run: |
-          echo "Skipping security scan — on verra ça la semaine prochaine 😅"
+          echo "Skipping security scan — we'll look at that next week 😅"
 
-      # ⚠️ BROKEN: needs: manquant — si les jobs étaient séparés, il y aurait une race condition
+      # ⚠️ BROKEN: needs: missing — if jobs were split, there would be a race condition
       - name: Deploy to production
-        # 🐌 SLOW: Déploiement manuel simulé — en vrai c'est 18 minutes de scripts bash
+        # 🐌 SLOW: Simulated manual deployment — in real life this takes 18 minutes
         if: github.ref == 'refs/heads/main'
         run: |
           echo "Deploying... fingers crossed 🤞"
-          echo "Connexion au serveur de production..."
-          sleep 5  # 🐌 Simulation des 18 min de déploiement (réduit à 5s pour la démo)
-          echo "Déploiement terminé. Probablement."
-          echo "Thomas vérifie manuellement que le site répond... 🤞"
-          echo "Si ça marche pas, voir avec Jean-Claude (plus dans l'équipe depuis mars 2022)"
+          echo "Connecting to production server..."
+          sleep 5  # 🐌 Simulating the 18-min deployment (reduced to 5s for the demo)
+          echo "Deployment complete. Probably."
+          echo "Thomas manually checks the site is responding... 🤞"
+          echo "If it breaks, ask Jean-Claude (left the team March 2022)"

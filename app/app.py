@@ -2,7 +2,7 @@ import sqlite3
 import time
 import os
 import json
-import sys  # unused import intentionally left — code quality issue
+import sys      # unused import intentionally left — code quality issue
 import hashlib  # unused import intentionally left — code quality issue
 from flask import Flask, request, jsonify
 
@@ -42,7 +42,7 @@ def login():
     cursor = conn.cursor()
 
     # 🚨 VULNERABLE: SQL Injection — never do this in production
-    # Exemple d'attaque : username = "admin' --" contourne l'authentification
+    # Example attack: username = "admin' --" bypasses authentication entirely
     query = f"SELECT * FROM users WHERE username = '{username}' AND password = '{password}'"
     cursor.execute(query)  # 🚨 VULNERABLE: SQL Injection
 
@@ -50,25 +50,25 @@ def login():
     conn.close()
 
     if user:
-        return jsonify({"status": "success", "message": f"Bienvenue, {username}!", "role": user[3]})
+        return jsonify({"status": "success", "message": f"Welcome, {username}!", "role": user[3]})
     else:
-        return jsonify({"status": "error", "message": "Identifiants invalides"}), 401
+        return jsonify({"status": "error", "message": "Invalid credentials"}), 401
 
 
 @app.route("/deploy", methods=["POST"])
 def deploy():
-    # 🐌 SLOW: Simule un déploiement de 18 minutes — ici réduit à 2s pour la démo
-    # En prod, ce processus prend vraiment 18 minutes (scripts bash legacy, pas de cache)
+    # 🐌 SLOW: Simulates an 18-minute deployment — reduced to 2s for the demo
+    # In production this really takes 18 minutes (legacy bash scripts, no cache)
     service = request.get_json().get("service", "api") if request.is_json else "api"
     version = request.get_json().get("version", "latest") if request.is_json else "latest"
 
-    time.sleep(2)  # 🐌 SLOW: simulation du déploiement manuel — "les doigts croisés 🤞"
+    time.sleep(2)  # 🐌 SLOW: simulating manual deployment — "fingers crossed 🤞"
 
     return jsonify({
         "status": "deployed",
         "service": service,
         "version": version,
-        "message": "Déploiement terminé... en espérant que ça tienne 🤞",
+        "message": "Deployment complete... hopefully it holds 🤞",
         "duration_seconds": 2,
         "estimated_prod_duration_minutes": 18
     })
@@ -86,4 +86,4 @@ def list_users():
 
 if __name__ == "__main__":
     init_db()
-    app.run(debug=True, host="0.0.0.0", port=5000)
+    app.run(host="0.0.0.0", port=5000)

@@ -1,28 +1,28 @@
 // Provisioned for Thomas's app — previously done manually in 45 minutes
-// Bicep template : App Service + Azure SQL Database
-// Environnement : Production
-// Région : West Europe (proximité équipe Thomas)
+// Bicep template: App Service + Azure SQL Database
+// Environment: Production
+// Region: West Europe (close to Thomas's team)
 
-@description('Nom de l\'application — utilisé comme préfixe pour toutes les ressources')
-param appName string = 'thomas-sisyphe-api'
+@description('Application name — used as a prefix for all resources')
+param appName string = 'thomas-sisyphus-api'
 
-@description('Région Azure pour le déploiement')
+@description('Azure region for deployment')
 param location string = resourceGroup().location
 
-@description('Environnement cible')
+@description('Target environment')
 @allowed(['dev', 'staging', 'prod'])
 param environment string = 'prod'
 
-@description('Nom administrateur SQL')
+@description('SQL administrator username')
 param sqlAdminLogin string = 'thomas-admin'
 
-@description('Mot de passe administrateur SQL')
+@description('SQL administrator password')
 @secure()
 param sqlAdminPassword string
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// App Service Plan — B1 (suffisant pour la démo)
-// Thomas avait créé ça en CLI, une commande à la fois, en 45 minutes
+// App Service Plan — B1 (sufficient for the demo)
+// Thomas used to do this in the portal, one click at a time, taking 45 minutes
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 resource appServicePlan 'Microsoft.Web/serverfarms@2023-01-01' = {
   name: '${appName}-plan-${environment}'
@@ -40,7 +40,7 @@ resource appServicePlan 'Microsoft.Web/serverfarms@2023-01-01' = {
   tags: {
     project: 'azure-insiders-demo'
     owner: 'thomas'
-    createdBy: 'bicep-not-manual'  // Contrairement à avant
+    createdBy: 'bicep-not-manual'  // Unlike before
   }
 }
 
@@ -58,7 +58,7 @@ resource appService 'Microsoft.Web/sites@2023-01-01' = {
       pythonVersion: '3.11'
       appCommandLine: 'gunicorn --bind=0.0.0.0:8000 --workers=2 app:app'
       alwaysOn: true
-      ftpsState: 'Disabled'  // Sécurité : désactiver FTP
+      ftpsState: 'Disabled'  // Security: disable FTP
       minTlsVersion: '1.2'
       appSettings: [
         {
@@ -67,7 +67,7 @@ resource appService 'Microsoft.Web/sites@2023-01-01' = {
         }
         {
           name: 'DATABASE_URL'
-          value: 'sqlite:///users.db'  // En prod, utiliser Azure SQL — voir sqlDatabase ci-dessous
+          value: 'sqlite:///users.db'  // In prod, use Azure SQL — see sqlDatabase below
         }
         {
           name: 'WEBSITES_ENABLE_APP_SERVICE_STORAGE'
@@ -75,7 +75,7 @@ resource appService 'Microsoft.Web/sites@2023-01-01' = {
         }
       ]
     }
-    httpsOnly: true  // Sécurité : forcer HTTPS
+    httpsOnly: true  // Security: enforce HTTPS
   }
   tags: {
     project: 'azure-insiders-demo'
@@ -86,7 +86,7 @@ resource appService 'Microsoft.Web/sites@2023-01-01' = {
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // Azure SQL Server
-// Thomas créait ça avec des clics dans le portail — 20 minutes minimum
+// Thomas used to create this with portal clicks — at least 20 minutes
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 resource sqlServer 'Microsoft.Sql/servers@2022-05-01-preview' = {
   name: '${appName}-sql-${environment}'
@@ -104,7 +104,7 @@ resource sqlServer 'Microsoft.Sql/servers@2022-05-01-preview' = {
   }
 }
 
-// Firewall rule — autoriser les services Azure
+// Firewall rule — allow Azure services
 resource sqlFirewallRule 'Microsoft.Sql/servers/firewallRules@2022-05-01-preview' = {
   parent: sqlServer
   name: 'AllowAzureServices'
@@ -116,7 +116,7 @@ resource sqlFirewallRule 'Microsoft.Sql/servers/firewallRules@2022-05-01-preview
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // Azure SQL Database — Basic tier (5 DTU)
-// Suffisant pour la démo, scalable en prod
+// Sufficient for the demo, scalable in production
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 resource sqlDatabase 'Microsoft.Sql/servers/databases@2022-05-01-preview' = {
   parent: sqlServer
@@ -139,13 +139,13 @@ resource sqlDatabase 'Microsoft.Sql/servers/databases@2022-05-01-preview' = {
 }
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// Outputs — informations utiles post-déploiement
+// Outputs — useful information post-deployment
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 output appServiceUrl string = 'https://${appService.properties.defaultHostName}'
 output appServiceName string = appService.name
 output sqlServerFqdn string = sqlServer.properties.fullyQualifiedDomainName
 output sqlDatabaseName string = sqlDatabase.name
 
-// Pour déployer :
+// To deploy:
 // az group create --name rg-thomas-demo --location westeurope
 // az deployment group create --resource-group rg-thomas-demo --template-file main.bicep --parameters sqlAdminPassword=<password>
