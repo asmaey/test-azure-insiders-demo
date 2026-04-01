@@ -1,0 +1,67 @@
+# ⚠️ TODO: This pipeline was written on a Friday. Good luck.
+# Estimated time: 18 minutes
+# Dernière modification: vendredi 17h52 par Thomas — "ça devrait marcher"
+
+name: Deploy — Thomas's Pipeline 🤞
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  # ⚠️ BROKEN: Tout dans un seul job — pas de parallélisme, pas de séparation des responsabilités
+  # lint, test, build, deploy tournent séquentiellement comme en 2015
+  build-and-deploy:
+    runs-on: ubuntu-18.04  # ⚠️ BROKEN: Runner déprécié depuis 2023 — va bientôt cesser de fonctionner
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2  # ⚠️ BROKEN: Version obsolète de l'action
+
+      - name: Setup Python
+        uses: actions/setup-python@v2  # ⚠️ BROKEN: Version obsolète
+        with:
+          python-version: 3.8  # ⚠️ BROKEN: Python 3.8 — EOL en octobre 2024, pas de support sécurité
+
+      # 🐌 SLOW: Pas de cache pip — télécharge tout à chaque run (ajoute ~4 min)
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r azure-insiders-demo/app/requirements.txt
+
+      - name: Lint
+        run: |
+          pip install flake8
+          flake8 azure-insiders-demo/app/ --max-line-length=120 || true  # ⚠️ BROKEN: erreurs ignorées avec || true
+
+      - name: Run tests
+        # ⚠️ BROKEN: Va échouer à cause du test cassé dans test_app.py (assert 999)
+        run: |
+          cd azure-insiders-demo
+          pytest app/tests/ -v
+
+      - name: Build Docker image
+        # 🐌 SLOW: Build sans cache Docker — recommence from scratch à chaque fois
+        run: |
+          echo "Building Docker image..."
+          echo "No Dockerfile found — Thomas avait prévu de l'ajouter 'plus tard'"
+          sleep 3  # 🐌 Simulation du build lent
+
+      - name: Security scan
+        # ⚠️ BROKEN: Pas de vrai scan de sécurité — Thomas "faisait confiance au code"
+        run: |
+          echo "Skipping security scan — on verra ça la semaine prochaine 😅"
+
+      # ⚠️ BROKEN: needs: manquant — si les jobs étaient séparés, il y aurait une race condition
+      - name: Deploy to production
+        # 🐌 SLOW: Déploiement manuel simulé — en vrai c'est 18 minutes de scripts bash
+        if: github.ref == 'refs/heads/main'
+        run: |
+          echo "Deploying... fingers crossed 🤞"
+          echo "Connexion au serveur de production..."
+          sleep 5  # 🐌 Simulation des 18 min de déploiement (réduit à 5s pour la démo)
+          echo "Déploiement terminé. Probablement."
+          echo "Thomas vérifie manuellement que le site répond... 🤞"
+          echo "Si ça marche pas, voir avec Jean-Claude (plus dans l'équipe depuis mars 2022)"
