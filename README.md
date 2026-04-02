@@ -113,6 +113,8 @@ Thomas is no longer the firefighter. He has become the **Reliability Architect**
 
 ---
 
+### Add the real "agentic workflow" check awesome-copilot/docs/README.workflows.md at main · github/awesome-copilot · GitHub  (daily issue report)
+
 ### Boulder 4 — Azure SRE Agent (Firas, ~7 min)
 
 *Handoff to Firas — see separate Azure SRE Agent script*
