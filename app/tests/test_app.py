@@ -31,11 +31,36 @@ def test_health_wrong_assertion(client):
     assert response.status_code == 999  # ⚠️ BROKEN: intentionally wrong to break CI
 
 
-# TODO: add auth tests — Copilot will suggest these
-# Tests for /login are missing — the Coding Agent will generate them automatically
-# Example cases to test:
-#   - Valid login with correct credentials
-#   - Invalid login with wrong password
-#   - 🚨 SQL Injection: username = "admin' --"
-#   - Request with no JSON body
-#   - Missing fields (username or password absent)
+def test_login_valid(client):
+    response = client.post("/login", json={"username": "admin", "password": "password123"})
+    assert response.status_code == 200
+    data = response.get_json()
+    assert data["status"] == "success"
+    assert data["role"] == "admin"
+
+
+def test_login_invalid_password(client):
+    response = client.post("/login", json={"username": "admin", "password": "wrongpassword"})
+    assert response.status_code == 401
+    data = response.get_json()
+    assert data["status"] == "error"
+
+
+def test_login_sql_injection_bypass(client):
+    # Ensure the classic SQL injection bypass no longer works
+    response = client.post("/login", json={"username": "admin' --", "password": "anything"})
+    assert response.status_code == 401
+    data = response.get_json()
+    assert data["status"] == "error"
+
+
+def test_login_no_body(client):
+    response = client.post("/login", content_type="application/json", data="")
+    assert response.status_code in (400, 401)
+
+
+def test_login_missing_fields(client):
+    response = client.post("/login", json={"username": "admin"})
+    assert response.status_code == 401
+    data = response.get_json()
+    assert data["status"] == "error"

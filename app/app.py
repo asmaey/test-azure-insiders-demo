@@ -34,17 +34,15 @@ def health():
 
 @app.route("/login", methods=["POST"])
 def login():
-    data = request.get_json()
+    data = request.get_json() or {}
     username = data.get("username", "")
     password = data.get("password", "")
 
     conn = sqlite3.connect(DATABASE)
     cursor = conn.cursor()
 
-    # 🚨 VULNERABLE: SQL Injection — never do this in production
-    # Example attack: username = "admin' --" bypasses authentication entirely
-    query = f"SELECT * FROM users WHERE username = '{username}' AND password = '{password}'"
-    cursor.execute(query)  # 🚨 VULNERABLE: SQL Injection
+    query = "SELECT * FROM users WHERE username = ? AND password = ?"
+    cursor.execute(query, (username, password))
 
     user = cursor.fetchone()
     conn.close()
