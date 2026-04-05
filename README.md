@@ -62,7 +62,8 @@ Thomas is no longer the firefighter. He has become the **Reliability Architect**
 2. Create the 3 issues from `ISSUES_SEED.md`
 3. Assign Issue #1 (SQL Injection) to Copilot Coding Agent **10 min before** the demo (it will be working in the background)
 4. Pre-run the `incident-response.yml` workflow and keep the logs open in a tab
-5. Open VS Code with `app/app.py` and `.github/workflows/deploy.yml` ready
+5. Trigger `daily-issues-report.lock.yml` to showcase how agentic workflows work
+6. Open VS Code with `app/app.py` and `.github/workflows/deploy.yml` ready
 
 ---
 
@@ -108,6 +109,7 @@ Thomas is no longer the firefighter. He has become the **Reliability Architect**
 3. Trigger `incident-response.yml` via workflow_dispatch (or show a completed run)
 4. Walk through the steps: Detect, Correlate, Diagnose, Remediate, Report
 5. Show the automatically created GitHub Issue with the structured incident report
+6. Trigger `daily-issues-report.lock.yml` (or show a completed run) to demonstrate daily issue triage automation
 
 **Punchline:** *"2am, Thomas is asleep. The workflow is already writing the post-mortem."*
 
@@ -137,7 +139,8 @@ azure-insiders-demo/
 │   └── workflows/
 │       ├── deploy.yml                  # BROKEN pipeline (Boulder 1)
 │       ├── deploy-fixed.yml            # Fixed pipeline (post-Copilot)
-│       └── incident-response.yml       # Agentic workflow (Boulder 3)
+│       ├── incident-response.yml       # Agentic workflow (Boulder 3)
+│       └── daily-issues-report.lock.yml # Daily issue summary workflow
 ├── infra/
 │   └── main.bicep                      # Azure infrastructure (App Service + SQL)
 ├── runbooks/
