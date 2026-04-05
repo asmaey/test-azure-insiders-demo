@@ -1,9 +1,4 @@
-# Issues to Create Before the Demo
 
-Create these 3 GitHub Issues manually before the live session.
-They set up the storytelling context for each boulder.
-
----
 
 ## Issue 1 — Boulder 2 (Coding Agent demo)
 
