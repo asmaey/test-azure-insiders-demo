@@ -1,4 +1,4 @@
-# Azure Insiders Demo Repo (Attendee Edition)
+# Azure Insiders Demo Repo 
 
 This repository accompanies the Azure Insiders session:
 "Accelerate your DevOps with AI: from code to intelligent deployment".
