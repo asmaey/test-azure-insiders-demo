@@ -26,9 +26,6 @@
 
 name: "Daily Issues Report"
 "on":
-  schedule:
-  - cron: "16 11 * * 1-5"
-    # Friendly format: daily on weekdays (scattered)
   workflow_dispatch:
     inputs:
       aw_context:

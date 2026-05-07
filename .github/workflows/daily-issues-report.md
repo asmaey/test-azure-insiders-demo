@@ -2,7 +2,7 @@
 name: "Daily Issues Report"
 description: "Generates a daily summary of open issues and recent activity as a GitHub issue"
 on:
-  schedule: daily on weekdays
+  workflow_dispatch
 permissions:
   contents: read
   issues: read
