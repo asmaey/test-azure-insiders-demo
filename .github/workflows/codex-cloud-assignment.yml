@@ -1,0 +1,157 @@
+name: Codex Cloud Agent Assignment
+
+on:
+  issues:
+    types: [opened, edited, reopened]
+  workflow_dispatch:
+    inputs:
+      issue_number:
+        description: Issue number to process manually
+        required: true
+        type: number
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  assign-codex-agent:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Resolve issue context
+        id: issue-context
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const eventIssue = context.payload.issue;
+            const manualIssueNumber = context.payload.inputs?.issue_number;
+
+            if (eventIssue) {
+              core.setOutput('issue_number', String(eventIssue.number));
+              core.setOutput('title', eventIssue.title || '');
+              core.setOutput('body', eventIssue.body || '');
+              return;
+            }
+
+            if (!manualIssueNumber) {
+              core.setFailed('No issue context available.');
+              return;
+            }
+
+            const { data: issue } = await github.rest.issues.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: Number(manualIssueNumber),
+            });
+
+            core.setOutput('issue_number', String(issue.number));
+            core.setOutput('title', issue.title || '');
+            core.setOutput('body', issue.body || '');
+
+      - name: Assign Codex cloud agent or notify for manual assignment
+        uses: actions/github-script@v7
+        env:
+          ISSUE_NUMBER: ${{ steps.issue-context.outputs.issue_number }}
+          ISSUE_TITLE: ${{ steps.issue-context.outputs.title }}
+          ISSUE_BODY: ${{ steps.issue-context.outputs.body }}
+          CODEX_AGENT_LOGIN: ${{ vars.CODEX_AGENT_LOGIN }}
+        with:
+          script: |
+            const issueNumber = Number(process.env.ISSUE_NUMBER);
+            const issueTitle = process.env.ISSUE_TITLE || '';
+            const issueBody = process.env.ISSUE_BODY || '';
+
+            const normalized = `${issueTitle}\n${issueBody}`.toLowerCase();
+            const isCodexAssignmentTask =
+              issueTitle.trim().toLowerCase() === 'task: assign to codex cloud agent' ||
+              normalized.includes('codex cloud agent');
+
+            if (!isCodexAssignmentTask) {
+              core.info('Issue does not match Codex assignment task criteria. Skipping.');
+              return;
+            }
+
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const marker = '<!-- codex-cloud-assignment-workflow -->';
+
+            const ensureTrackingLabel = async () => {
+              try {
+                await github.rest.issues.getLabel({ owner, repo, name: 'codex-cloud-agent' });
+              } catch (error) {
+                if (error.status !== 404) {
+                  throw error;
+                }
+                await github.rest.issues.createLabel({
+                  owner,
+                  repo,
+                  name: 'codex-cloud-agent',
+                  color: '0E8A16',
+                  description: 'Tracked by Codex Cloud Agent assignment workflow',
+                });
+              }
+            };
+
+            await ensureTrackingLabel();
+            await github.rest.issues.addLabels({
+              owner,
+              repo,
+              issue_number: issueNumber,
+              labels: ['codex-cloud-agent'],
+            });
+
+            const configuredLogin = (process.env.CODEX_AGENT_LOGIN || '').trim();
+            const candidateLogins = [
+              configuredLogin,
+              'codex',
+              'copilot-swe-agent',
+              'github-copilot[bot]',
+            ]
+              .map((login) => login.trim())
+              .filter((login) => login.length > 0);
+
+            const { data: collaborators } = await github.rest.repos.listCollaborators({
+              owner,
+              repo,
+              per_page: 100,
+            });
+
+            const collaboratorByLogin = new Map(
+              collaborators.map((c) => [c.login.toLowerCase(), c.login])
+            );
+
+            const selectedAssignee = candidateLogins.find((candidate) =>
+              collaboratorByLogin.has(candidate.toLowerCase())
+            );
+
+            if (selectedAssignee) {
+              await github.rest.issues.addAssignees({
+                owner,
+                repo,
+                issue_number: issueNumber,
+                assignees: [selectedAssignee],
+              });
+
+              core.info(`Assigned issue #${issueNumber} to ${selectedAssignee}.`);
+              return;
+            }
+
+            const { data: comments } = await github.rest.issues.listComments({
+              owner,
+              repo,
+              issue_number: issueNumber,
+              per_page: 100,
+            });
+
+            const hasWorkflowComment = comments.some((comment) =>
+              (comment.body || '').includes(marker)
+            );
+
+            if (!hasWorkflowComment) {
+              await github.rest.issues.createComment({
+                owner,
+                repo,
+                issue_number: issueNumber,
+                body: `${marker}\nNo Codex Cloud Agent collaborator was detected automatically. Please assign this issue manually to the available Codex account for this repository, if one exists.`,
+              });
+            }

@@ -24,6 +24,7 @@ By exploring this project, you can practice how to:
 | Security bug | SQL injection in login endpoint | `app/app.py` (`/login`) and `ISSUES_SEED.md` issue 1 |
 | Incident response | Manual, slow runbook process | `runbooks/incident-runbook.md` and `.github/workflows/incident-response.yml` |
 | Daily operational summary | Manual triage does not scale | `.github/workflows/daily-issues-report.lock.yml` |
+| Codex task assignment | Manual assignment to Codex cloud agent is inconsistent | `.github/workflows/codex-cloud-assignment.yml` |
 
 ## Quick Start
 
@@ -91,6 +92,14 @@ Trigger the workflow manually from GitHub Actions:
 3. Click "Run workflow".
 
 This demonstrates automated issue triage/reporting.
+
+### Flow E: Automate Codex Cloud Agent Assignment
+
+When an issue matches the Codex-assignment task pattern (for example, title `Task: Assign to Codex Cloud Agent`), the `codex-cloud-assignment.yml` workflow:
+
+1. Applies a tracking label: `codex-cloud-agent`
+2. Assigns the issue to an available Codex-style collaborator (`CODEX_AGENT_LOGIN` repo variable preferred)
+3. Posts one manual-assignment guidance comment if no Codex account is available in the repository
 
 ## Project Structure
 
