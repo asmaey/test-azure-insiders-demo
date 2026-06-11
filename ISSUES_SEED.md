@@ -251,3 +251,20 @@ Rollback command is on page 47. Thomas will get there eventually.
 Rollback to the previous deployment using Azure App Service deployment slots.
 See runbook step 47 (or just use the incident-response.yml workflow).
 ```
+
+---
+
+## Issue 4 — Boulder 4 (Copilot Cloud Agent assignment demo)
+
+**Title:** `Task: Assign to Copilot Cloud Agent`
+
+**Labels:** `task`, `copilot`, `automation`
+
+**Body:**
+
+```
+## Task
+This issue is assigned to the Copilot Cloud Agent. Complete the required actions or analysis as specified by the user. Use this issue to test assignment and tracking capabilities for Copilot in the cloud agent workflow.
+
+> **Note:** Copilot Cloud Agent is expected to be assigned to this issue.
+```
