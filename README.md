@@ -123,3 +123,7 @@ test-azure-insiders-demo/
 4. Extend incident workflows with rollback and notification integrations.
 
 Project created for Azure Insiders (April 2026), adapted for attendees.
+
+## Copilot Cloud Agent
+
+This repository has been tested with [GitHub Copilot Cloud Agent](https://docs.github.com/en/copilot/using-github-copilot/using-github-copilot-for-pull-requests/using-copilot-to-help-you-work-on-a-pull-request) to validate AI-assisted issue resolution workflows. You can monitor AI credit usage per task in the GitHub Copilot settings and billing dashboard.
